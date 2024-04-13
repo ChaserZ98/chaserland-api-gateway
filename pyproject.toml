@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "chaserland-api-gateway"
+version = "0.1.0"
+description = ""
+authors = ["ChaserZ98 <feiyuzheng98@gmail.com>"]
+readme = "README.md"
+packages = [{include = "chaserland_api_gateway", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
