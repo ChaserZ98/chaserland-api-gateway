@@ -9,6 +9,7 @@ packages = [{include = "chaserland_api_gateway", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.110.1"
+pydantic-settings = "^2.2.1"
 
 
 [build-system]
