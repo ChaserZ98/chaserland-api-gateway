@@ -4,12 +4,13 @@ version = "0.1.0"
 description = ""
 authors = ["ChaserZ98 <feiyuzheng98@gmail.com>"]
 readme = "README.md"
-packages = [{include = "chaserland_api_gateway", from = "src"}]
+packages = [{ include = "chaserland_api_gateway", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.110.1"
 pydantic-settings = "^2.2.1"
+chaserland-common = { git = "https://github.com/ChaserZ98/chaserland-common.git", branch = "dev" }
 
 
 [build-system]
