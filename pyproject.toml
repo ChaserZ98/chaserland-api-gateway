@@ -11,6 +11,7 @@ python = "^3.12"
 fastapi = "^0.110.1"
 pydantic-settings = "^2.2.1"
 chaserland-common = { git = "https://github.com/ChaserZ98/chaserland-common.git", branch = "dev" }
+redis = "^5.0.3"
 
 
 [build-system]
