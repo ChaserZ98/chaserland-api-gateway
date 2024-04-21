@@ -3,13 +3,18 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.logger import logger as fastapi_logger
 
+from ..redis.redis import get_redis_session_context
+
 
 async def on_startup(app: FastAPI):
-    fastapi_logger.info(f"{app.title} starting up")
+    fastapi_logger.info(f"Testing Redis connection...")
+    async with get_redis_session_context() as redis:
+        await redis.ping()
+    fastapi_logger.info(f"{app.title} server ready to accept connections.")
 
 
 async def on_shutdown(app: FastAPI):
-    fastapi_logger.info(f"{app.title} shutting down")
+    fastapi_logger.info(f"{app.title} server stopped.")
 
 
 @asynccontextmanager
