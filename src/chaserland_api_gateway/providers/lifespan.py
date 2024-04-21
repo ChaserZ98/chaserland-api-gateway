@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.logger import logger as fastapi_logger
 
-from ..redis.redis import get_redis_session_context
+from ..redis.redis import get_redis_session_context, pool
 
 
 async def on_startup(app: FastAPI):
@@ -14,6 +14,8 @@ async def on_startup(app: FastAPI):
 
 
 async def on_shutdown(app: FastAPI):
+    fastapi_logger.info(f"Closing Redis connection...")
+    await pool.aclose()
     fastapi_logger.info(f"{app.title} server stopped.")
 
 
