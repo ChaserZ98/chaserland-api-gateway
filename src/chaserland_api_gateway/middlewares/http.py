@@ -77,6 +77,6 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
         except ValueError:
             status_phrase = "Unknown"
         self.logger.info(
-            f'{host}:{port} - "{request.method} {url}" {response.status_code} {status_phrase} {formatted_proces_time}ms'
+            f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
         )
         return response
