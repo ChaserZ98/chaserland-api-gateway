@@ -3,7 +3,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class JWTSettings(BaseSettings):
-    PRIVATE_KEY: SecretStr = SecretStr("")
     PUBLIC_KEY: SecretStr = SecretStr("")
     ALGORITHM: str = ""
     MODE: str = ""
