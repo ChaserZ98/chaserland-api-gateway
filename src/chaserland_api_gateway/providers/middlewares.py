@@ -3,13 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ..config.app import app_settings
 from ..core.provider import AbstractFastAPIComponentProvider
-from ..middlewares.http import LogRequestMiddleware, ServerInfoMiddleware
+from ..middlewares.http import (
+    LogRequestMiddleware,
+    ServerErrorMiddleware,
+    ServerInfoMiddleware,
+)
 
 
 class MiddlewareProvider(AbstractFastAPIComponentProvider):
     @staticmethod
     def register(app: FastAPI):
-        app.add_middleware(LogRequestMiddleware)
+        """
+        Register middlewares to the FastAPI application.
+        The last middleware added will be the first to be executed.
+        """
+        app.add_middleware(ServerInfoMiddleware)
         app.add_middleware(
             CORSMiddleware,
             allow_origins=app_settings.ALLOWED_ORIGINS,
@@ -17,4 +25,5 @@ class MiddlewareProvider(AbstractFastAPIComponentProvider):
             allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
             allow_headers=["*"],
         )
-        app.add_middleware(ServerInfoMiddleware)
+        app.add_middleware(ServerErrorMiddleware)
+        app.add_middleware(LogRequestMiddleware)
