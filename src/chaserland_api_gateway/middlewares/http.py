@@ -97,11 +97,17 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
         formatted_proces_time = f"{process_time:.2f}"
         host = request.client.host if request.client and request.client.host else None
         port = request.client.port if request.client and request.client.port else None
+
         try:
             status_phrase = http.HTTPStatus(response.status_code).phrase
         except ValueError:
             status_phrase = "Unknown"
-        self.logger.info(
-            f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
-        )
+        if response.status_code < 400:
+            self.logger.info(
+                f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
+            )
+        else:
+            self.logger.error(
+                f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
+            )
         return response
