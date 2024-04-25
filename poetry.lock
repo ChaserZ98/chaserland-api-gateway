@@ -49,7 +49,7 @@ pycryptodome = "^3.20.0"
 type = "git"
 url = "https://github.com/ChaserZ98/chaserland-common.git"
 reference = "dev"
-resolved_reference = "6e24863779e64467d3e265e4a7c036ed9abf6193"
+resolved_reference = "2426dade5df743928477fcc4bbf68364ea2057ce"
 
 [[package]]
 name = "chaserland-grpc-proto"
