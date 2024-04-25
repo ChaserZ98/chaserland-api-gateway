@@ -2,6 +2,8 @@ import http
 import logging
 import time
 
+import grpc
+from chaserland_common.grpc.utils import to_http_status
 from fastapi import HTTPException, Request
 from fastapi.logger import logger as fastapi_logger
 from fastapi.responses import JSONResponse
@@ -62,6 +64,15 @@ class ServerErrorMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
             return response
+        except grpc.aio.AioRpcError as e:
+            status_code = to_http_status(e.code())
+            content = {
+                "detail": e.details() if status_code < 500 else "Internal server error"
+            }
+            return JSONResponse(
+                status_code=status_code,
+                content=content,
+            )
         except Exception as e:
             url = (
                 f"{request.url.path}?{request.query_params}"
@@ -102,7 +113,7 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
             status_phrase = http.HTTPStatus(response.status_code).phrase
         except ValueError:
             status_phrase = "Unknown"
-        if response.status_code < 400:
+        if response.status_code < 500:
             self.logger.info(
                 f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
             )
