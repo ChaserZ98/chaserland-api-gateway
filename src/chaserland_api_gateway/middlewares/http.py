@@ -113,7 +113,7 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
             status_phrase = http.HTTPStatus(response.status_code).phrase
         except ValueError:
             status_phrase = "Unknown"
-        if response.status_code < 400:
+        if response.status_code < 500:
             self.logger.info(
                 f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
             )
