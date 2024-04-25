@@ -13,6 +13,7 @@ pydantic-settings = "^2.2.1"
 chaserland-common = { git = "https://github.com/ChaserZ98/chaserland-common.git", branch = "dev" }
 redis = "^5.0.3"
 uvicorn = "^0.29.0"
+chaserland-grpc-proto = { git = "https://github.com/ChaserZ98/chaserland-grpc-proto.git", tag = "v0.2.0" }
 
 
 [build-system]
