@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 
+from fastapi import FastAPI
+
 
 class AbstractFastAPIComponentProvider(ABC):
     """Provider interface for registering FastAPI app components."""
 
-    @staticmethod
     @abstractmethod
-    def register(app):
+    def register(self, app: FastAPI):
         """Register FastAPI app components.
 
         Args:
