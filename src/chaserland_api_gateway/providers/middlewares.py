@@ -1,29 +1,39 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.logger import logger as fastapi_logger
+from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..config.app import app_settings
 from ..core.provider import AbstractFastAPIComponentProvider
-from ..middlewares.http import (
-    LogRequestMiddleware,
-    ServerErrorMiddleware,
-    ServerInfoMiddleware,
-)
 
 
 class MiddlewareProvider(AbstractFastAPIComponentProvider):
-    @staticmethod
-    def register(app: FastAPI):
+    def __init__(
+        self,
+        middlewares: list[
+            type[BaseHTTPMiddleware] | tuple[type[BaseHTTPMiddleware], dict[str, any]]
+        ] = [],
+    ):
+        self.middlewares = middlewares
+
+    def add_middleware(self, middleware: type[BaseHTTPMiddleware], **kwargs):
+        if kwargs:
+            self.middlewares.append((middleware, kwargs))
+        else:
+            self.middlewares.append(middleware)
+
+    def register(self, app: FastAPI):
         """
         Register middlewares to the FastAPI application.
         The last middleware added will be the first to be executed.
         """
-        app.add_middleware(ServerInfoMiddleware)
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=app_settings.ALLOWED_ORIGINS,
-            allow_credentials=True,
-            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-            allow_headers=["*"],
-        )
-        app.add_middleware(ServerErrorMiddleware)
-        app.add_middleware(LogRequestMiddleware)
+        for middleware in self.middlewares:
+            if isinstance(middleware, tuple):
+                middleware, kwargs = middleware
+                fastapi_logger.debug(
+                    f"Registering middleware [{middleware.__name__}]..."
+                )
+                app.add_middleware(middleware, **kwargs)
+            else:
+                fastapi_logger.debug(
+                    f"Registering middleware [{middleware.__name__}]..."
+                )
+                app.add_middleware(middleware)
