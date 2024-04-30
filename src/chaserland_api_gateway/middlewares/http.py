@@ -7,8 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
-from ..config.app import app_settings
-from ..redis.redis import get_redis_session
+from ..redis.redis import get_redis_pool, get_redis_session_context
 from ..utils.rate_limiter import RateLimiter
 
 
@@ -20,7 +19,7 @@ class ServerInfoMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         response = await call_next(request)
-        response.headers["Server"] = app_settings.NAME
+        response.headers["Server"] = request.app.title
         return response
 
 
@@ -34,7 +33,7 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         request: Request,
         call_next: RequestResponseEndpoint,
     ):
-        async for redis in get_redis_session():
+        async with get_redis_session_context(pool=get_redis_pool(request)) as redis:
             try:
                 rate_info = await self.rate_limiter.check(request, redis)
             except HTTPException as e:
