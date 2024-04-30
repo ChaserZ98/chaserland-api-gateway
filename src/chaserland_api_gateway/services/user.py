@@ -2,8 +2,12 @@ import asyncio
 from contextlib import AbstractAsyncContextManager
 
 import grpc
-from chaserland_grpc_proto.protos.user.user_pb2 import OAuthLoginRequest
+from chaserland_grpc_proto.protos.user.user_pb2 import (
+    OAuthLoginRequest,
+    OAuthLoginResponse,
+)
 from chaserland_grpc_proto.protos.user.user_pb2_grpc import UserStub
+from fastapi import Request
 
 from ..config.grpc import ServiceSettings
 from ..utils.interceptor import (
@@ -22,7 +26,9 @@ class UserServiceClient:
     async def wait_for_ready(self, timeout: float = 5):
         await asyncio.wait_for(self.channel.wait_for_ready(), timeout=timeout)
 
-    async def oauth_login(self, request: OAuthLoginRequest, timeout: float = 5):
+    async def oauth_login(
+        self, request: OAuthLoginRequest, timeout: float = 5
+    ) -> OAuthLoginResponse:
         return await self.stub.oauth_login(request, timeout=timeout)
 
 
@@ -53,3 +59,14 @@ class UserService(AbstractAsyncContextManager[UserServiceClient]):
         traceback,
     ) -> bool | None:
         await self.channel.close(grace=self.grace_time)
+
+
+def get_user_stub(request: Request) -> UserServiceClient:
+    if not hasattr(request.state, "user_stub"):
+        raise AttributeError("Request state does not have a 'user_stub' attribute.")
+    user_stub = request.state.user_stub
+    if not isinstance(user_stub, UserServiceClient):
+        raise TypeError(
+            f"User stub is not an instance of UserServiceClient. Got: {type(user_stub)}."
+        )
+    return user_stub
