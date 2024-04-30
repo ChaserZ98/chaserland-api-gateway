@@ -23,5 +23,7 @@ def create_sub_app(**kwargs) -> FastAPI:
 
 
 def register(app: FastAPI, provider: AbstractFastAPIComponentProvider) -> None:
+    fastapi_logger.info(
+        f"Registering [{type(provider).__name__}] for app [{app.title}]..."
+    )
     provider.register(app)
-    fastapi_logger.info(provider.__name__ + " registered.")
