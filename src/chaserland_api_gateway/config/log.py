@@ -7,9 +7,7 @@ from .app import app_settings
 
 
 class LogSettings(BaseSettings):
-    LOG_LEVEL: str = "INFO"
     LOG_DIRECTORY: str = "logs"
-    LOG_PATH: str = os.path.join(os.path.dirname(app_settings.BASE_PATH), LOG_DIRECTORY)
 
     model_config = SettingsConfigDict(
         env_prefix="APP_LOG_",
@@ -17,6 +15,14 @@ class LogSettings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @property
+    def LOG_LEVEL(self) -> str:
+        return "DEBUG" if app_settings.DEBUG else "INFO"
+
+    @property
+    def LOG_PATH(self) -> str:
+        return os.path.join(os.path.dirname(app_settings.BASE_PATH), self.LOG_DIRECTORY)
 
     @property
     def LOG_FORMATTERS(self) -> dict:
