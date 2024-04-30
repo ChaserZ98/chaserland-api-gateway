@@ -7,6 +7,5 @@ from ..core.provider import AbstractFastAPIComponentProvider
 
 
 class LogProvider(AbstractFastAPIComponentProvider):
-    @staticmethod
-    def register(app: FastAPI):
+    def register(self, app: FastAPI):
         logging.config.dictConfig(log_settings.FASTAPI_LOG_CONFIG)
