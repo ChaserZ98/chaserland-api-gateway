@@ -9,6 +9,7 @@ from chaserland_api_gateway.core.exception_handler import (
     ValidationExceptionHandler,
 )
 from chaserland_api_gateway.middlewares.http import (
+    ExceptionHandlerMiddleware,
     LogRequestMiddleware,
     ServerInfoMiddleware,
 )
@@ -44,6 +45,7 @@ middleware_provider.add_middleware(
     ],
     allow_headers=["*"],
 )
+middleware_provider.add_middleware(ExceptionHandlerMiddleware)
 middleware_provider.add_middleware(LogRequestMiddleware)
 register(app, middleware_provider)
 
