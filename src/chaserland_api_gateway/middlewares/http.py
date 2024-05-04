@@ -3,6 +3,7 @@ import logging
 import time
 
 from fastapi import HTTPException, Request
+from fastapi.logger import logger as fastapi_logger
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
@@ -83,5 +84,30 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
         else:
             self.logger.error(
                 f'{host}:{port} - "{request.method} {url}" {response.status_code} "{status_phrase}" {formatted_proces_time}ms'
+            )
+        return response
+
+
+class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, logger: logging.Logger = fastapi_logger):
+        super().__init__(app)
+        self.logger = logger
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        try:
+            response = await call_next(request)
+        except HTTPException as e:
+            return JSONResponse(
+                status_code=e.status_code,
+                content={"detail": e.detail},
+                headers=e.headers,
+            )
+        except Exception as e:
+            self.logger.exception(e)
+            return JSONResponse(
+                status_code=500,
+                content={"detail": "Internal server error"},
             )
         return response
