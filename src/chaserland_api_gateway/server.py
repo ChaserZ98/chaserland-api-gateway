@@ -1,6 +1,9 @@
 import os
 from importlib import import_module
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from chaserland_api_gateway.bootstrap.app import register
 from chaserland_api_gateway.config.app import app_settings
 from chaserland_api_gateway.core.exception_handler import (
@@ -18,8 +21,6 @@ from chaserland_api_gateway.providers.lifespan import lifespan
 from chaserland_api_gateway.providers.log import LogProvider
 from chaserland_api_gateway.providers.middlewares import MiddlewareProvider
 from chaserland_api_gateway.providers.route import SubAppProvider
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title=app_settings.NAME,
@@ -62,6 +63,6 @@ for module in os.listdir(os.path.join(os.path.dirname(__file__), "app")):
             f".app.{module}.mount", package="chaserland_api_gateway"
         ).app
         subapp_provider.add_app(f"/{module}", subapp)
-    except ModuleNotFoundError as e:
+    except ModuleNotFoundError:
         pass
 register(app, subapp_provider)
